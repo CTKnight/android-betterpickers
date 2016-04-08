@@ -31,7 +31,7 @@ Including in Your Project
 ### Gradle
 
 ```groovy
-compile 'com.code-troopers.betterpickers:library:2.5.1'
+compile 'com.code-troopers.betterpickers:library:2.5.2'
 ```
 
 ### Maven
@@ -40,7 +40,7 @@ compile 'com.code-troopers.betterpickers:library:2.5.1'
 <dependency>
   <groupId>com.code-troopers.betterpickers</groupId>
   <artifactId>library</artifactId>
-  <version>2.5.1</version>
+  <version>2.5.2</version>
   <type>aar</type>
 </dependency>
 ```
@@ -61,6 +61,8 @@ button.setOnClickListener(new View.OnClickListener() {
                 .setFirstDayOfWeek(Calendar.SUNDAY)
                 .setPreselectedDate(towDaysAgo.getYear(), towDaysAgo.getMonthOfYear() - 1, towDaysAgo.getDayOfMonth())
                 .setDateRange(minDate, null)
+                .setDoneText("Yay")
+                .setCancelText("Nop")
                 .setThemeDark(true);
         cdp.show(getSupportFragmentManager(), FRAG_TAG_DATE_PICKER);
     }
@@ -76,6 +78,8 @@ button.setOnClickListener(new View.OnClickListener() {
         RadialTimePickerDialogFragment rtpd = new RadialTimePickerDialogFragment()
                 .setOnTimeSetListener(SampleRadialTimeBasicUsage.this)
                 .setStartTime(10, 10)
+                .setDoneText("Yay")
+                .setCancelText("Nop")
                 .setThemeDark(true);
         rtpd.show(getSupportFragmentManager(), FRAG_TAG_TIME_PICKER);
     }
@@ -271,7 +275,7 @@ Icon | Application
 <img src="https://lh6.ggpht.com/wG3RSgReZcIcKsqFfsKSibR-j1UYfOekNmtY8x0n0mjWJT84U2V3l2lh3TmxeXfJis0z=w300" width="48" height="48" /> | [Trello]
 <img src="https://lh3.ggpht.com/OuJF91ba0PiNItxw_zAqwjarenly_LiaeaPJQOHBrVWPsGzydjUZ1ANp1wVDpU4cLsE=w300" width="48" height="48" /> | [Navig'Tours] 
 <img src="https://lh3.googleusercontent.com/wgzBdz0-R999n1uo6qKJmIzPCt3ShM2lSM6oHmpz9HQKHhbuU0hGYwYhTJx_2QmAhic=w300" width="48" height="48" /> | [Sleep Well] 
- | 
+<img src="https://lh3.googleusercontent.com/h30IiTNjNayoas5zhbeE38ajB-rsW9Cpz-AOnZnBIuwoOVMMnKZxDQ1RYRLZYLW8Jxc=w300" width="48" height="48" /> | [Dayon Alarm] 
 
 
 
@@ -318,3 +322,4 @@ License
  [Trello]:https://play.google.com/store/apps/details?id=com.trello
  [Navig'Tours]: https://play.google.com/store/apps/details?id=com.codetroopers.transport.tours
  [Sleep Well]: https://play.google.com/store/apps/details?id=com.processingbox.jevaisbiendormir
+ [Dayon Alarm]: https://play.google.com/store/apps/details?id=com.atesfactory.dayon

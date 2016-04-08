@@ -1,6 +1,15 @@
 
 Changelog
 =========
+**2.5.next**
+* Add setter for changing cancel button label of RadialDatePicker (#266) 
+* Add setter for changing ok and cancel button label of CalendarDatePicker (#268) 
+
+**2.5.2**
+* Fix Chinese translations (#256)
+* Fix aapt error (#261)
+* Update roboto font (#258)
+
 **2.5.1**
 * Fix day dates not visible in CalendarDatePicker (#252)
 * Fix Fragment restoration for NumberPicker (#254)
