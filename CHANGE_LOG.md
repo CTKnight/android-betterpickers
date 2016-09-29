@@ -1,7 +1,46 @@
 
 Changelog
 =========
+**3.0.1**
+* Fix setExpiration being called before setMinYear (#319)
+* Fix leading zeroes issue in HMS Picker (#311)
+
+**3.0.0**
+* Fix Fragment already added Exception (#298)
+* Remove deprecated methods :
+    - CalendarDatePickerDialogFragment#setThemeDark(boolean dark) replaced by CalendarDatePickerDialogFragment#setThemeDark()
+    - CalendarDatePickerDialogFragment#newInstance(...) repalced by CalendarDatePickerDialogFragment#setOnDateSetListener() and CalendarDatePickerDialogFragment#setPreselectedDate()
+    - CalendarDatePickerDialogFragment#initialize(...) replaced by CalendarDatePickerDialogFragment#setOnDateSetListener() and CalendarDatePickerDialogFragment#setPreselectedDate()
+    - HmsPickerDialogFragment#HmsPickerDialogHandler replaced by HmsPickerDialogFragment#HmsPickerDialogHandlerV2
+    - HmsPickerDialogFragment#setHmsPickerDialogHandlers(...) replaced by HmsPickerDialogFragment#setHmsPickerDialogHandlersV2(...)
+    - HmsPickerBuilder#addHmsPickerDialogHandler(HmsPickerDialogHandler) replaced by HmsPickerBuilder#addHmsPickerDialogHandler(HmsPickerDialogHandlerV2)
+    - HmsPickerBuilder#removeHmsPickerDialogHandler(HmsPickerDialogHandler) replaced by HmsPickerBuilder#removeHmsPickerDialogHandler(HmsPickerDialogHandlerV2)
+    - NumberPickerDialogFragment#NumberPickerDialogHandler replaced by NumberPickerDialogFragment#NumberPickerDialogHandlerV2
+    - NumberPickerDialogFragment#setNumberPickerDialogHandlers(...) replaced by NumberPickerDialogFragment#setNumberPickerDialogHandlersV2(...)
+    - NumberPickerBuilder#addNumberPickerDialogHandler(NumberPickerDialogHandler) replaced by NumberPickerBuilder#addNumberPickerDialogHandler(NumberPickerDialogHandlerV2)
+    - NumberPickerBuilder#removeNumberPickerDialogHandler(NumberPickerDialogHandler) replaced by NumberPickerBuilder#removeNumberPickerDialogHandler(NumberPickerDialogHandlerV2)
+    - RadialTimePickerDialogFragment#newInstance(...) replaced by RadialTimePickerDialogFragment#setOnTimeSetListener(...) and RadialTimePickerDialogFragment#setStartTime(...)
+    - RadialTimePickerDialogFragment#initialize(...) replaced by RadialTimePickerDialogFragment#setOnTimeSetListener(...) and RadialTimePickerDialogFragment#setStartTime(...)
+    - RadialTimePickerDialogFragment#setThemeDark(boolea) replaced by RadialTimePickerDialogFragment#setThemeDark()
+
 **2.5.next**
+* Fix disable day color for CalendarDatePicker with range limit (#294)
+
+**2.5.6**
+* Fix typo in RecurrenceEvent (#290)
+* Update support library (#296)
+* Fix style of header of radial picker (#291)
+
+**2.5.5**
+* Fix recurrence picker exception (#282)
+
+**2.5.4**
+* Add Czech translations (#267)
+* Added min/max limits to RadialTimePicker (#272)
+* Fix Recurrence To string formatter for monthly and yearly events (#270)
+* Add HMSPicker negative duration option (#281)
+
+**2.5.3**
 * Add setter for changing cancel button label of RadialDatePicker (#266) 
 * Add setter for changing ok and cancel button label of CalendarDatePicker (#268) 
 

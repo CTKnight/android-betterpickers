@@ -23,7 +23,7 @@ Try out the sample application on [Google Play][6].
 
 <a href="https://play.google.com/store/apps/details?id=com.codetroopers.betterpickersapp">
   <img alt="BetterPickers Samples on Google Play"
-         src="https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png" width="140" />
+         src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png" width="140" />
 </a>
 
 Including in Your Project
@@ -31,7 +31,7 @@ Including in Your Project
 ### Gradle
 
 ```groovy
-compile 'com.code-troopers.betterpickers:library:2.5.2'
+compile 'com.code-troopers.betterpickers:library:3.0.1'
 ```
 
 ### Maven
@@ -40,7 +40,7 @@ compile 'com.code-troopers.betterpickers:library:2.5.2'
 <dependency>
   <groupId>com.code-troopers.betterpickers</groupId>
   <artifactId>library</artifactId>
-  <version>2.5.2</version>
+  <version>3.0.1</version>
   <type>aar</type>
 </dependency>
 ```
@@ -85,7 +85,7 @@ button.setOnClickListener(new View.OnClickListener() {
     }
 });
 ```
- 
+
 ### Recurrence Picker
 
 ```java
@@ -100,7 +100,7 @@ button.setOnClickListener(new View.OnClickListener() {
         bundle.putString(RecurrencePickerDialogFragment.BUNDLE_TIME_ZONE, time.timezone);
         bundle.putString(RecurrencePickerDialogFragment.BUNDLE_RRULE, mRrule);
         bundle.putBoolean(RecurrencePickerDialogFragment.BUNDLE_HIDE_SWITCH_BUTTON, true);
-        
+
         RecurrencePickerDialogFragment rpd = new RecurrencePickerDialogFragment();
         rpd.setArguments(bundle);
         rpd.setOnRecurrenceSetListener(SampleRecurrenceBasicUsage.this);
@@ -122,7 +122,7 @@ button.setOnClickListener(new View.OnClickListener() {
         bundle.putLong(TimeZonePickerDialogFragment.BUNDLE_START_TIME_MILLIS, time.toMillis(false));
         bundle.putString(TimeZonePickerDialogFragment.BUNDLE_TIME_ZONE, time.timezone);
         bundle.putString(RecurrencePickerDialogFragment.BUNDLE_RRULE, mRrule);
-        
+
         TimeZonePickerDialogFragment tzpd = new TimeZonePickerDialogFragment();
         tzpd.setArguments(bundle);
         tzpd.setOnTimeZoneSetListener(SampleTimeZoneBasicUsage.this);
@@ -145,7 +145,7 @@ button.setOnClickListener(new View.OnClickListener() {
     }
 });
 ```
-  
+
 ### Expiration Picker
 
 ```java
@@ -154,13 +154,13 @@ button.setOnClickListener(new View.OnClickListener() {
     public void onClick(View v) {
         ExpirationPickerBuilder epb = new ExpirationPickerBuilder()
                   .setFragmentManager(getSupportFragmentManager())
-                  .setStyleResId(R.style.BetterPickersDialogFragment) 
+                  .setStyleResId(R.style.BetterPickersDialogFragment)
                   .setMinYear(2000);
         epb.show();
     }
 });
 ```
- 
+
 ### HMS Picker
 
 ```java
@@ -206,10 +206,68 @@ button.setOnClickListener(new View.OnClickListener() {
 
 Theming
 =======
-
 *For a demonstration of theming, see the `sample/` folder.*
 
-You can use your own themes if you'd like to change certain attributes.  BetterPickers currently allows for customization of the following attributes:
+### Calendar Date Picker / Radial Time Picker
+
+  1. Use attributes that allow you to customize pickers
+
+        bpHeaderBackgroundColor     ::
+        bpHeaderUnselectedTextColor ::
+        bpHeaderSelectedTextColor   ::
+        bpBodyBackgroundColor       ::
+        bpBodySelectedTextColor     ::
+        bpBodyUnselectedTextColor   ::
+        bpButtonsBackgroundColor    ::
+        bpButtonsTextColor          ::
+        -- Calendar Date Picker
+        bpPreHeaderBackgroundColor  ::
+        bpDisabledDayTextColor      ::
+        -- Radial Time Picker
+        bpRadialBackgroundColor     ::
+        bpRadialTextColor           ::
+        bpRadialPointerColor        ::
+        bpAmPmCircleColor           ::
+
+  2. Create your own custom theme in `styles.xml`:
+
+    ```xml
+    <style name="MyCustomBetterPickersDialogs" parent="BetterPickersRadialTimePickerDialog.PrimaryColor">
+        <item name="bpPreHeaderBackgroundColor">@color/holo_red_dark</item>
+        <item name="bpHeaderBackgroundColor">@color/holo_red_light</item>
+        <item name="bpHeaderSelectedTextColor">@color/holo_orange_dark</item>
+        <item name="bpHeaderUnselectedTextColor">@android:color/white</item>
+
+        <item name="bpBodyBackgroundColor">@color/holo_blue_dark</item>
+        <item name="bpBodySelectedTextColor">@color/holo_orange_dark</item>
+        <item name="bpBodyUnselectedTextColor">@android:color/white</item>
+
+        <item name="bpRadialBackgroundColor">@color/holo_orange_dark</item>
+        <item name="bpRadialTextColor">@color/holo_purple</item>
+        <item name="bpRadialPointerColor">@android:color/black</item>
+
+        <item name="bpButtonsBackgroundColor">@color/holo_green_dark</item>
+        <item name="bpButtonsTextColor">@color/holo_orange_dark</item>
+    </style>
+    ```
+
+  3. Instantiate your `DialogFragment` using your custom theme:
+
+  ```java
+  RadialTimePickerDialogFragment rtpd = new RadialTimePickerDialogFragment()
+         .setOnTimeSetListener(SampleRadialTimeThemeCustom.this)
+         .setThemeCustom(R.style.MyCustomBetterPickersDialogs);
+  rtpd.show(getSupportFragmentManager(), FRAG_TAG_TIME_PICKER);
+  ```
+  4. Result
+
+  <img src="https://raw.githubusercontent.com/code-troopers/android-betterpickers/master/sample/imagery/screenshot_calendar_date_customized.png" width="120">
+  <img src="https://raw.githubusercontent.com/code-troopers/android-betterpickers/master/sample/imagery/screenshot_radial_time_customized.png" width="120">
+
+### Date Picker / Expiration Picker / HMS Picker / Number Picker / Time Picker
+
+
+  1. You can use your own themes if you'd like to change certain attributes.  BetterPickers currently allows for customization of the following attributes:
 
         bpDialogBackground       :: the drawable (preferably a 9-patch) used as a window background for the DialogFragment
         bpTextColor              :: the color (optionally state list) for all text in the DialogFragment
@@ -220,7 +278,7 @@ You can use your own themes if you'd like to change certain attributes.  BetterP
         bpDividerColor           :: the color used for the DialogFragment dividers
         bpKeyboardIndicatorColor :: the color used for the ViewPagerIndicator on the DateDialogPicker
 
-  1. Create your own custom theme in `styles.xml`:
+  2. Create your own custom theme in `styles.xml`:
 
   ```xml
   <style name="MyCustomBetterPickerTheme">
@@ -235,7 +293,7 @@ You can use your own themes if you'd like to change certain attributes.  BetterP
   </style>
   ```
 
-  2. Instantiate your `DialogFragment` using your custom theme:
+  3. Instantiate your `DialogFragment` using your custom theme:
 
   ```java
   DatePickerBuilder dpb = new DatePickerBuilder()
@@ -252,7 +310,7 @@ You can view the readme [here](README_1.6.0.md)
 
 ChangeLog
 =========
-Change log file is available [here](Changelog.md)
+Change log file is available [here](CHANGE_LOG.md)
 
 Contribution
 ============
@@ -273,9 +331,11 @@ Please send a pull request if you would like to be added here.
 Icon | Application
 ------------ | -------------
 <img src="https://lh6.ggpht.com/wG3RSgReZcIcKsqFfsKSibR-j1UYfOekNmtY8x0n0mjWJT84U2V3l2lh3TmxeXfJis0z=w300" width="48" height="48" /> | [Trello]
-<img src="https://lh3.ggpht.com/OuJF91ba0PiNItxw_zAqwjarenly_LiaeaPJQOHBrVWPsGzydjUZ1ANp1wVDpU4cLsE=w300" width="48" height="48" /> | [Navig'Tours] 
-<img src="https://lh3.googleusercontent.com/wgzBdz0-R999n1uo6qKJmIzPCt3ShM2lSM6oHmpz9HQKHhbuU0hGYwYhTJx_2QmAhic=w300" width="48" height="48" /> | [Sleep Well] 
-<img src="https://lh3.googleusercontent.com/h30IiTNjNayoas5zhbeE38ajB-rsW9Cpz-AOnZnBIuwoOVMMnKZxDQ1RYRLZYLW8Jxc=w300" width="48" height="48" /> | [Dayon Alarm] 
+<img src="https://lh3.ggpht.com/OuJF91ba0PiNItxw_zAqwjarenly_LiaeaPJQOHBrVWPsGzydjUZ1ANp1wVDpU4cLsE=w300" width="48" height="48" /> | [Navig'Tours]
+<img src="https://lh3.googleusercontent.com/wgzBdz0-R999n1uo6qKJmIzPCt3ShM2lSM6oHmpz9HQKHhbuU0hGYwYhTJx_2QmAhic=w300" width="48" height="48" /> | [Sleep Well]
+<img src="https://lh3.googleusercontent.com/h30IiTNjNayoas5zhbeE38ajB-rsW9Cpz-AOnZnBIuwoOVMMnKZxDQ1RYRLZYLW8Jxc=w300" width="48" height="48" /> | [Dayon Alarm]
+<img src="http://imgur.com/ayz4NSY.png" width="48" height="48" /> | [Driving Timer]
+<img src="https://lh6.ggpht.com/p_j7PAV7YnvGl1ONtQ3OcqtIBpEeocH0okXpy2Hmaztwz8k9BBPLMvUnup6ptG4HxjE=w300" width="48" height="48" /> | [TVShow Time]
 
 
 
@@ -309,7 +369,7 @@ License
     limitations under the License.
 
  [5]: https://raw.github.com/code-troopers/android-betterpickers/master/sample/imagery/web_feature_graphic.png
- [6]: https://play.google.com/store/apps/details?id=com.doomonafireball.betterpickers.sample
+ [6]: https://play.google.com/store/apps/details?id=com.codetroopers.betterpickersapp
  [7]: http://developer.android.com/guide/developing/projects/projects-eclipse.html
  [8]: http://developer.android.com/guide/developing/projects/projects-eclipse.html#ReferencingLibraryProject
  [9]: http://viewpagerindicator.com/
@@ -323,3 +383,5 @@ License
  [Navig'Tours]: https://play.google.com/store/apps/details?id=com.codetroopers.transport.tours
  [Sleep Well]: https://play.google.com/store/apps/details?id=com.processingbox.jevaisbiendormir
  [Dayon Alarm]: https://play.google.com/store/apps/details?id=com.atesfactory.dayon
+ [Driving Timer]: https://play.google.com/store/apps/details?id=tk.leoforney.drivingtimer
+ [TVShow Time]: https://play.google.com/store/apps/details?id=com.tozelabs.tvshowtime

@@ -14,8 +14,7 @@ import com.codetroopers.betterpickers.sample.activity.BaseSampleActivity;
 /**
  * User: derek Date: 3/17/13 Time: 3:59 PM
  */
-public class SampleHmsMultipleHandlers extends BaseSampleActivity
-        implements HmsPickerDialogFragment.HmsPickerDialogHandler {
+public class SampleHmsMultipleHandlers extends BaseSampleActivity implements HmsPickerDialogFragment.HmsPickerDialogHandlerV2 {
 
     private TextView mResultTextView;
 
@@ -41,17 +40,18 @@ public class SampleHmsMultipleHandlers extends BaseSampleActivity
         });
     }
 
-    class MyCustomHandler implements HmsPickerDialogFragment.HmsPickerDialogHandler {
+    class MyCustomHandler implements HmsPickerDialogFragment.HmsPickerDialogHandlerV2 {
 
         @Override
-        public void onDialogHmsSet(int reference, int hours, int minutes, int seconds) {
-            Toast.makeText(SampleHmsMultipleHandlers.this, "MyCustomHandler onDialogHmsSet!", Toast.LENGTH_SHORT)
+        public void onDialogHmsSet(int reference, boolean isNegative, int hours, int minutes, int seconds) {
+            Toast
+                    .makeText(SampleHmsMultipleHandlers.this, "MyCustomHandler onDialogHmsSet!", Toast.LENGTH_SHORT)
                     .show();
         }
     }
 
     @Override
-    public void onDialogHmsSet(int reference, int hours, int minutes, int seconds) {
-        mResultTextView.setText(getString(R.string.hms_picker_result_value_multiline, hours, minutes, seconds));
+    public void onDialogHmsSet(int reference, boolean isNegative, int hours, int minutes, int seconds) {
+        mResultTextView.setText(getString(R.string.hms_picker_result_value_multiline, hours, minutes, seconds, isNegative));
     }
 }

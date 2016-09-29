@@ -40,6 +40,7 @@ import android.widget.TextView;
 import com.codetroopers.betterpickers.HapticFeedbackController;
 import com.codetroopers.betterpickers.R;
 import com.codetroopers.betterpickers.Utils;
+import com.codetroopers.betterpickers.numberpicker.NumberPickerErrorTextView;
 import com.codetroopers.betterpickers.radialtimepicker.RadialPickerLayout.OnValueSelectedListener;
 import com.nineoldandroids.animation.ObjectAnimator;
 
@@ -62,6 +63,10 @@ public class RadialTimePickerDialogFragment extends DialogFragment implements On
     private static final String KEY_IN_KB_MODE = "in_kb_mode";
     private static final String KEY_TYPED_TIMES = "typed_times";
     private static final String KEY_STYLE = "theme";
+    private static final String KEY_FUTURE_MINUTES_LIMIT = "future_minutes_limit";
+    private static final String KEY_PAST_MINUTES_LIMIT = "past_minutes_limit";
+    private static final String KEY_CURRENT_DATE = "current_date";
+    private static final String KEY_PICKER_DATE = "picker_date";
 
     public static final int HOUR_INDEX = 0;
     public static final int MINUTE_INDEX = 1;
@@ -88,6 +93,8 @@ public class RadialTimePickerDialogFragment extends DialogFragment implements On
     private TextView mAmPmTextView;
     private View mAmPmHitspace;
     private RadialPickerLayout mTimePicker;
+    private TextView mTitleTextView;
+    private NumberPickerErrorTextView mError;
 
     private int mSelectedColor;
     private int mUnselectedColor;
@@ -95,12 +102,17 @@ public class RadialTimePickerDialogFragment extends DialogFragment implements On
     private String mPmText;
     private String mDoneText;
     private String mCancelText;
+    private String mTitleText;
 
     private boolean mAllowAutoAdvance;
     private int mInitialHourOfDay;
     private int mInitialMinute;
     private Boolean mIs24HourMode;
     private int mStyleResId;
+    private Integer mFutureMinutesLimit;
+    private Integer mPastMinutesLimit;
+    private Calendar mValidateDateTime;
+    private Calendar mPickerDate;
 
     // For hardware IME input.
     private char mPlaceholderText;
@@ -144,43 +156,6 @@ public class RadialTimePickerDialogFragment extends DialogFragment implements On
         mStyleResId = R.style.BetterPickersRadialTimePickerDialog_PrimaryColor;
     }
 
-    @Deprecated
-    public static RadialTimePickerDialogFragment newInstance(OnTimeSetListener callback,
-                                                             int hourOfDay, int minute, boolean is24HourMode) {
-        RadialTimePickerDialogFragment ret = new RadialTimePickerDialogFragment();
-        ret.initialize(callback, hourOfDay, minute, is24HourMode);
-        return ret;
-    }
-
-    /**
-     * @Deprecated will be removed in next major release use setOnTimeSetListener() and setStartTime()
-     */
-    @Deprecated
-    public void initialize(OnTimeSetListener callback,
-                           int hourOfDay, int minute, boolean is24HourMode) {
-        mCallback = callback;
-        mInitialHourOfDay = hourOfDay;
-        mInitialMinute = minute;
-        mIs24HourMode = is24HourMode;
-        mInKbMode = false;
-        mStyleResId = R.style.BetterPickersRadialTimePickerDialog_PrimaryColor;
-    }
-
-    /**
-     * Set a dark or light theme. NOTE: this will only take effect for the next onCreateView.
-     *
-     * @Deprecated use setThemeDark()
-     */
-    @Deprecated
-    public RadialTimePickerDialogFragment setThemeDark(boolean dark) {
-        if (dark) {
-            mStyleResId = R.style.BetterPickersRadialTimePickerDialog_Dark;
-        } else {
-            mStyleResId = R.style.BetterPickersRadialTimePickerDialog_Light;
-        }
-        return this;
-    }
-
     public RadialTimePickerDialogFragment setThemeDark() {
         mStyleResId = R.style.BetterPickersRadialTimePickerDialog_Dark;
         return this;
@@ -222,8 +197,33 @@ public class RadialTimePickerDialogFragment extends DialogFragment implements On
         return this;
     }
 
+    public RadialTimePickerDialogFragment setTitleText(String text) {
+        mTitleText = text;
+        return this;
+    }
+
     public RadialTimePickerDialogFragment setDoneText(String text) {
         mDoneText = text;
+        return this;
+    }
+
+    public RadialTimePickerDialogFragment setFutureMinutesLimit(Integer futureMinutesLimit) {
+        this.mFutureMinutesLimit = futureMinutesLimit;
+        return this;
+    }
+
+    public RadialTimePickerDialogFragment setPastMinutesLimit(Integer pastMinutesLimit) {
+        this.mPastMinutesLimit = pastMinutesLimit;
+        return this;
+    }
+
+    public RadialTimePickerDialogFragment setValidateDateTime(Calendar validateDateTime) {
+        this.mValidateDateTime = validateDateTime;
+        return this;
+    }
+
+    public RadialTimePickerDialogFragment setPickerDate(Calendar pickerDate) {
+        this.mPickerDate = pickerDate;
         return this;
     }
 
@@ -270,6 +270,18 @@ public class RadialTimePickerDialogFragment extends DialogFragment implements On
             mIs24HourMode = savedInstanceState.getBoolean(KEY_IS_24_HOUR_VIEW);
             mInKbMode = savedInstanceState.getBoolean(KEY_IN_KB_MODE);
             mStyleResId = savedInstanceState.getInt(KEY_STYLE);
+            if (savedInstanceState.containsKey(KEY_FUTURE_MINUTES_LIMIT)) {
+                mFutureMinutesLimit = savedInstanceState.getInt(KEY_FUTURE_MINUTES_LIMIT);
+            }
+            if (savedInstanceState.containsKey(KEY_PAST_MINUTES_LIMIT)) {
+                mPastMinutesLimit = savedInstanceState.getInt(KEY_PAST_MINUTES_LIMIT);
+            }
+            if (savedInstanceState.containsKey(KEY_CURRENT_DATE)) {
+                mValidateDateTime = (Calendar) savedInstanceState.getSerializable(KEY_CURRENT_DATE);
+            }
+            if (savedInstanceState.containsKey(KEY_PICKER_DATE)) {
+                mPickerDate = (Calendar) savedInstanceState.getSerializable(KEY_PICKER_DATE);
+            }
         } else {
             if (mIs24HourMode == null) {
                 mIs24HourMode = DateFormat.is24HourFormat(getContext());
@@ -288,14 +300,20 @@ public class RadialTimePickerDialogFragment extends DialogFragment implements On
         view.findViewById(R.id.time_picker_dialog).setOnKeyListener(keyboardListener);
 
         Resources res = getResources();
-        TypedArray themeColors = getActivity().obtainStyledAttributes(mStyleResId, R.styleable.BetterPickersDialog);
+        TypedArray themeColors = getActivity().obtainStyledAttributes(mStyleResId, R.styleable.BetterPickersDialogs);
+
+        // Prepare some colors to use.
+        int headerBgColor = themeColors.getColor(R.styleable.BetterPickersDialogs_bpHeaderBackgroundColor, R.color.bpBlue);
+        int bodyBgColor = themeColors.getColor(R.styleable.BetterPickersDialogs_bpBodyBackgroundColor, R.color.bpWhite);
+        int buttonBgColor = themeColors.getColor(R.styleable.BetterPickersDialogs_bpButtonsBackgroundColor, R.color.bpWhite);
+        int buttonTextColor = themeColors.getColor(R.styleable.BetterPickersDialogs_bpButtonsTextColor, R.color.bpBlue);
+        mSelectedColor = themeColors.getColor(R.styleable.BetterPickersDialogs_bpHeaderSelectedTextColor, R.color.bpWhite);
+        mUnselectedColor = themeColors.getColor(R.styleable.BetterPickersDialogs_bpHeaderUnselectedTextColor, R.color.radial_gray_light);
 
         mHourPickerDescription = res.getString(R.string.hour_picker_description);
         mSelectHours = res.getString(R.string.select_hours);
         mMinutePickerDescription = res.getString(R.string.minute_picker_description);
         mSelectMinutes = res.getString(R.string.select_minutes);
-        mSelectedColor = themeColors.getColor(R.styleable.BetterPickersDialog_bpAccentColor, R.color.bpBlue);
-        mUnselectedColor = themeColors.getColor(R.styleable.BetterPickersDialog_bpMainTextColor, R.color.numbers_text_color);
 
         mHourView = (TextView) view.findViewById(R.id.hours);
         mHourView.setOnKeyListener(keyboardListener);
@@ -338,11 +356,27 @@ public class RadialTimePickerDialogFragment extends DialogFragment implements On
             }
         });
 
+        mTitleTextView = (TextView) view.findViewById(R.id.time_picker_header);
+        if (mTitleText != null) {
+            mTitleTextView.setVisibility(View.VISIBLE);
+            mTitleTextView.setText(mTitleText);
+        } else {
+            mTitleTextView.setVisibility(View.GONE);
+        }
+
+        mError = (NumberPickerErrorTextView) view.findViewById(R.id.error);
+
+        if (hasTimeLimits()) {
+            mError.setVisibility(View.INVISIBLE);
+        } else {
+            mError.setVisibility(View.GONE);
+        }
+
         mDoneButton = (Button) view.findViewById(R.id.done_button);
         if (mDoneText != null) {
             mDoneButton.setText(mDoneText);
         }
-        mDoneButton.setTextColor(mSelectedColor);
+        mDoneButton.setTextColor(buttonTextColor);
         mDoneButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -351,11 +385,7 @@ public class RadialTimePickerDialogFragment extends DialogFragment implements On
                 } else {
                     tryVibrate();
                 }
-                if (mCallback != null) {
-                    mCallback.onTimeSet(RadialTimePickerDialogFragment.this,
-                            mTimePicker.getHours(), mTimePicker.getMinutes());
-                }
-                dismiss();
+                doneClickValidateAndCallback();
             }
         });
         mDoneButton.setOnKeyListener(keyboardListener);
@@ -364,7 +394,7 @@ public class RadialTimePickerDialogFragment extends DialogFragment implements On
         if (mCancelText != null) {
             cancelButton.setText(mCancelText);
         }
-        cancelButton.setTextColor(mSelectedColor);
+        cancelButton.setTextColor(buttonTextColor);
         cancelButton.setOnClickListener(new OnClickListener() {
 
             @Override
@@ -379,8 +409,7 @@ public class RadialTimePickerDialogFragment extends DialogFragment implements On
         if (mIs24HourMode) {
             mAmPmTextView.setVisibility(View.GONE);
 
-            RelativeLayout.LayoutParams paramsSeparator = new RelativeLayout.LayoutParams(
-                    LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+            RelativeLayout.LayoutParams paramsSeparator = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
             paramsSeparator.addRule(RelativeLayout.CENTER_IN_PARENT);
             TextView separatorView = (TextView) view.findViewById(R.id.separator);
             separatorView.setLayoutParams(paramsSeparator);
@@ -424,20 +453,20 @@ public class RadialTimePickerDialogFragment extends DialogFragment implements On
         // Set the theme at the end so that the initialize()s above don't counteract the theme.
         mTimePicker.setTheme(themeColors);
 
-        // Prepare some colors to use.
-        int mainColor1 = themeColors.getColor(R.styleable.BetterPickersDialog_bpMainColor1, R.color.bpWhite);
-        int mainColor2 = themeColors.getColor(R.styleable.BetterPickersDialog_bpMainColor2, R.color.circle_background);
-        int lineColor = themeColors.getColor(R.styleable.BetterPickersDialog_bpLineColor, R.color.bpLine_background);
-        int mainTextColor = themeColors.getColor(R.styleable.BetterPickersDialog_bpMainTextColor, R.color.numbers_text_color);
 
         // Set the colors for each view based on the theme.
-        view.findViewById(R.id.time_display_background).setBackgroundColor(mainColor1);
-        view.findViewById(R.id.ok_cancel_buttons_layout).setBackgroundColor(mainColor1);
-        view.findViewById(R.id.time_display).setBackgroundColor(mainColor1);
-        ((TextView) view.findViewById(R.id.separator)).setTextColor(mainTextColor);
-        ((TextView) view.findViewById(R.id.ampm_label)).setTextColor(mainTextColor);
-        mTimePicker.setBackgroundColor(mainColor2);
+        view.findViewById(R.id.time_display_background).setBackgroundColor(headerBgColor);
+        view.findViewById(R.id.ok_cancel_buttons_layout).setBackgroundColor(buttonBgColor);
+        view.findViewById(R.id.time_display).setBackgroundColor(headerBgColor);
+        view.findViewById(R.id.time_picker_error_holder).setBackgroundColor(headerBgColor);
+        ((TextView) view.findViewById(R.id.separator)).setTextColor(mUnselectedColor);
+        ((TextView) view.findViewById(R.id.ampm_label)).setTextColor(mUnselectedColor);
+        mTimePicker.setBackgroundColor(bodyBgColor);
         return view;
+    }
+
+    private boolean hasTimeLimits() {
+        return mFutureMinutesLimit != null || mPastMinutesLimit != null;
     }
 
     @Override
@@ -478,10 +507,76 @@ public class RadialTimePickerDialogFragment extends DialogFragment implements On
             outState.putBoolean(KEY_IS_24_HOUR_VIEW, mIs24HourMode);
             outState.putInt(KEY_CURRENT_ITEM_SHOWING, mTimePicker.getCurrentItemShowing());
             outState.putBoolean(KEY_IN_KB_MODE, mInKbMode);
-            if (mInKbMode) {
-                outState.putIntegerArrayList(KEY_TYPED_TIMES, mTypedTimes);
-            }
+            if (mFutureMinutesLimit != null)
+                outState.putInt(KEY_FUTURE_MINUTES_LIMIT, mFutureMinutesLimit);
+            if (mPastMinutesLimit != null)
+                outState.putInt(KEY_PAST_MINUTES_LIMIT, mPastMinutesLimit);
+            outState.putSerializable(KEY_CURRENT_DATE, mValidateDateTime);
+            outState.putSerializable(KEY_PICKER_DATE, mPickerDate);
+            if (mInKbMode) outState.putIntegerArrayList(KEY_TYPED_TIMES, mTypedTimes);
             outState.putInt(KEY_STYLE, mStyleResId);
+        }
+    }
+
+    /**
+     * Checks if the selected time lays too far in the future
+     *
+     * @return true if too far in the future, false if not
+     */
+    public boolean isSelectionTooFarInTheFuture() {
+        if (this.mPickerDate != null && this.mValidateDateTime != null && this.mFutureMinutesLimit != null) {
+            Calendar selectedDate = Calendar.getInstance();
+            selectedDate.setTime(this.mPickerDate.getTime());
+            selectedDate.set(Calendar.HOUR_OF_DAY, mTimePicker.getHours());
+            selectedDate.set(Calendar.MINUTE, mTimePicker.getMinutes());
+
+            Calendar futureLimit = Calendar.getInstance();
+            futureLimit.setTime(this.mValidateDateTime.getTime());
+            futureLimit.add(Calendar.MINUTE, this.mFutureMinutesLimit);
+            return selectedDate.compareTo(futureLimit) > 0;
+        }
+        return false;
+    }
+
+    /**
+     * Checks if the selected time lays too far in the past
+     *
+     * @return true if too far in the past, false if not
+     */
+    public boolean isSelectionTooFarInPast() {
+        if (this.mPickerDate != null && this.mValidateDateTime != null && this.mPastMinutesLimit != null) {
+            Calendar selectedDate = Calendar.getInstance();
+            selectedDate.setTime(this.mPickerDate.getTime());
+            selectedDate.set(Calendar.HOUR_OF_DAY, mTimePicker.getHours());
+            selectedDate.set(Calendar.MINUTE, mTimePicker.getMinutes());
+
+            Calendar pastLimit = Calendar.getInstance();
+            pastLimit.setTime(this.mValidateDateTime.getTime());
+            pastLimit.add(Calendar.MINUTE, -this.mPastMinutesLimit);
+            return selectedDate.compareTo(pastLimit) < 0;
+        }
+        return false;
+    }
+
+    /**
+     * Called when the done button is pressed. Validates the input and performs a callback if valid.
+     */
+    public void doneClickValidateAndCallback() {
+        if (isSelectionTooFarInTheFuture()) {
+            if (mError != null) {
+                mError.setText(getString(R.string.max_time_error));
+                mError.show();
+            }
+        } else if (isSelectionTooFarInPast()) {
+            if (mError != null) {
+                mError.setText(getString(R.string.min_time_error));
+                mError.show();
+            }
+        } else {
+            if (mCallback != null) {
+                mCallback.onTimeSet(RadialTimePickerDialogFragment.this, mTimePicker.getHours(), mTimePicker.getMinutes());
+            }
+            dismiss();
         }
     }
 
@@ -490,6 +585,9 @@ public class RadialTimePickerDialogFragment extends DialogFragment implements On
      */
     @Override
     public void onValueSelected(int pickerIndex, int newValue, boolean autoAdvance) {
+        if(hasTimeLimits()) {
+            mError.hideImmediately();
+        }
         if (pickerIndex == HOUR_INDEX) {
             setHour(newValue, false);
             String announcement = String.format("%d", newValue);
@@ -604,11 +702,7 @@ public class RadialTimePickerDialogFragment extends DialogFragment implements On
                 }
                 finishKbMode(false);
             }
-            if (mCallback != null) {
-                mCallback.onTimeSet(RadialTimePickerDialogFragment.this,
-                        mTimePicker.getHours(), mTimePicker.getMinutes());
-            }
-            dismiss();
+            doneClickValidateAndCallback();
             return true;
         } else if (keyCode == KeyEvent.KEYCODE_DEL) {
             if (mInKbMode) {

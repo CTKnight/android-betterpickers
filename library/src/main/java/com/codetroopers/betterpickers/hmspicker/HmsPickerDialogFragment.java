@@ -18,10 +18,11 @@ import java.util.Vector;
 /**
  * Dialog to set alarm time.
  */
-public class HmsPickerDialogFragment extends DialogFragment {
+    public class HmsPickerDialogFragment extends DialogFragment {
 
     private static final String REFERENCE_KEY = "HmsPickerDialogFragment_ReferenceKey";
     private static final String THEME_RES_ID_KEY = "HmsPickerDialogFragment_ThemeResIdKey";
+    private static final String PLUS_MINUS_VISIBILITY_KEY = "HmsPickerDialogFragment_PlusMinusVisibilityKey";
 
     private HmsPicker mPicker;
 
@@ -29,10 +30,11 @@ public class HmsPickerDialogFragment extends DialogFragment {
     private int mTheme = -1;
     private ColorStateList mTextColor;
     private int mDialogBackgroundResId;
-    private Vector<HmsPickerDialogHandler> mHmsPickerDialogHandlers = new Vector<HmsPickerDialogHandler>();
+    private Vector<HmsPickerDialogHandlerV2> mHmsPickerDialogHandlerV2s = new Vector<HmsPickerDialogHandlerV2>();
     private int mHours;
     private int mMinutes;
     private int mSeconds;
+    private int mPlusMinusVisibility = View.INVISIBLE;
 
     /**
      * Create an instance of the Picker (used internally)
@@ -41,11 +43,14 @@ public class HmsPickerDialogFragment extends DialogFragment {
      * @param themeResId the style resource ID for theming
      * @return a Picker!
      */
-    public static HmsPickerDialogFragment newInstance(int reference, int themeResId) {
+    public static HmsPickerDialogFragment newInstance(int reference, int themeResId, Integer plusMinusVisibility) {
         final HmsPickerDialogFragment frag = new HmsPickerDialogFragment();
         Bundle args = new Bundle();
         args.putInt(REFERENCE_KEY, reference);
         args.putInt(THEME_RES_ID_KEY, themeResId);
+        if (plusMinusVisibility != null) {
+            args.putInt(PLUS_MINUS_VISIBILITY_KEY, plusMinusVisibility);
+        }
         frag.setArguments(args);
         return frag;
     }
@@ -65,6 +70,9 @@ public class HmsPickerDialogFragment extends DialogFragment {
         }
         if (args != null && args.containsKey(THEME_RES_ID_KEY)) {
             mTheme = args.getInt(THEME_RES_ID_KEY);
+        }
+        if (args != null && args.containsKey(PLUS_MINUS_VISIBILITY_KEY)) {
+            mPlusMinusVisibility = args.getInt(PLUS_MINUS_VISIBILITY_KEY);
         }
 
         setStyle(DialogFragment.STYLE_NO_TITLE, 0);
@@ -101,20 +109,23 @@ public class HmsPickerDialogFragment extends DialogFragment {
         doneButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                for (HmsPickerDialogHandler handler : mHmsPickerDialogHandlers) {
-                    handler.onDialogHmsSet(mReference, mPicker.getHours(), mPicker.getMinutes(), mPicker.getSeconds());
+                for (HmsPickerDialogHandlerV2 handler : mHmsPickerDialogHandlerV2s) {
+                    handler.onDialogHmsSet(mReference, mPicker.isNegative(), mPicker.getHours(), mPicker.getMinutes(), mPicker.getSeconds());
                 }
+
                 final Activity activity = getActivity();
                 final Fragment fragment = getTargetFragment();
-                if (activity instanceof HmsPickerDialogHandler) {
-                    final HmsPickerDialogHandler act =
-                            (HmsPickerDialogHandler) activity;
-                    act.onDialogHmsSet(mReference, mPicker.getHours(), mPicker.getMinutes(), mPicker.getSeconds());
-                } else if (fragment instanceof HmsPickerDialogHandler) {
-                    final HmsPickerDialogHandler frag =
-                            (HmsPickerDialogHandler) fragment;
-                    frag.onDialogHmsSet(mReference, mPicker.getHours(), mPicker.getMinutes(), mPicker.getSeconds());
+
+                if (activity instanceof HmsPickerDialogHandlerV2) {
+                    final HmsPickerDialogHandlerV2 act =
+                            (HmsPickerDialogHandlerV2) activity;
+                    act.onDialogHmsSet(mReference, mPicker.isNegative(), mPicker.getHours(), mPicker.getMinutes(), mPicker.getSeconds());
+                } else if (fragment instanceof HmsPickerDialogHandlerV2) {
+                    final HmsPickerDialogHandlerV2 frag =
+                            (HmsPickerDialogHandlerV2) fragment;
+                    frag.onDialogHmsSet(mReference, mPicker.isNegative(), mPicker.getHours(), mPicker.getMinutes(), mPicker.getSeconds());
                 }
+
                 dismiss();
             }
         });
@@ -123,27 +134,24 @@ public class HmsPickerDialogFragment extends DialogFragment {
         mPicker.setSetButton(doneButton);
         mPicker.setTime(mHours, mMinutes, mSeconds);
         mPicker.setTheme(mTheme);
+        mPicker.setPlusMinusVisibility(mPlusMinusVisibility);
 
         getDialog().getWindow().setBackgroundDrawableResource(mDialogBackgroundResId);
 
         return view;
     }
 
-    /**
-     * This interface allows objects to register for the Picker's set action.
-     */
-    public interface HmsPickerDialogHandler {
+    public interface HmsPickerDialogHandlerV2 {
 
-        void onDialogHmsSet(int reference, int hours, int minutes, int seconds);
+        void onDialogHmsSet(int reference, boolean isNegative, int hours, int minutes, int seconds);
     }
 
     /**
-     * Attach a Vector of handlers to be notified in addition to the Fragment's Activity and target Fragment.
-     *
      * @param handlers a Vector of handlers
+     * Attach a Vector of handlers to be notified in addition to the Fragment's Activity and target Fragment.
      */
-    public void setHmsPickerDialogHandlers(Vector<HmsPickerDialogHandler> handlers) {
-        mHmsPickerDialogHandlers = handlers;
+    public void setHmsPickerDialogHandlersV2(Vector<HmsPickerDialogHandlerV2> handlers) {
+        mHmsPickerDialogHandlerV2s = handlers;
     }
 
     public void setTime(int hours, int minutes, int seconds) {

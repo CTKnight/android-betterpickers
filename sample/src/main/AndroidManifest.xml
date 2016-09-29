@@ -83,15 +83,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activity.numberpicker.SampleNumberOldBasicUsage"
-            android:label="Number/Deprecated Basic Usage"
-            android:theme="@style/Theme.AppCompat">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="com.doomonafireball.betterpickers.sample.SAMPLE" />
-            </intent-filter>
-        </activity>
-        <activity
             android:name=".activity.numberpicker.SampleNumberMaxValue"
             android:label="Number/Max Value"
             android:theme="@style/Theme.AppCompat">
@@ -259,6 +250,14 @@
         <activity
             android:name=".activity.hmspicker.SampleHmsBasicUsage"
             android:label="HMS/Basic Usage">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="com.doomonafireball.betterpickers.sample.SAMPLE" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".activity.hmspicker.SampleHmsNegativeDurationUsage"
+            android:label="HMS/Negative Duration">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="com.doomonafireball.betterpickers.sample.SAMPLE" />
@@ -459,6 +458,14 @@
         <activity
             android:name=".activity.radialtimepicker.SampleRadialTimeForced24hFormat"
             android:label="Radial Time/Forced 24h Format">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="com.doomonafireball.betterpickers.sample.SAMPLE" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".activity.radialtimepicker.SampleRadialTimeMinMax"
+            android:label="Radial Time/Limit +-1 hour">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="com.doomonafireball.betterpickers.sample.SAMPLE" />

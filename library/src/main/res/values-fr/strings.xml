@@ -29,6 +29,9 @@
     <string name="min_error">S\'il vous plaît, veuillez indiquer un nombre plus grand ou égal à %1$s</string>
     <string name="max_error">S\'il vous plaît, veuillez indiquer un nombre plus petit ou égal à %1$s</string>
     <string name="min_max_error">S\'il vous plaît, veuillez indiquer un nombre entre %1$s et %2$s</string>
+    <!-- Time validation -->
+    <string name="max_time_error">L\'heure saisie est trop loin dans le futur</string>
+    <string name="min_time_error">L\'heure saisie est trop loin dans le passé</string>
 
     <!-- From AOSP -->
     <!-- Label for button to confirm chosen date or time [CHAR LIMIT=30] -->
@@ -70,19 +73,6 @@
     <string name="item_is_selected">%1$s choisi</string>
     <!-- Accessibility announcement when a number that had been typed in is deleted [CHAR_LIMIT=NONE] -->
     <string name="deleted_key">%1$s effacé</string>
-
-    <!-- DO NOT TRANSLATE -->
-    <string name="time_placeholder">--</string>
-    <!-- DO NOT TRANSLATE -->
-    <string name="time_separator">:</string>
-
-    <!-- DO NOT TRANSLATE -->
-    <string name="radial_numbers_typeface">sans-serif</string>
-    <!-- DO NOT TRANSLATE -->
-    <string name="sans_serif">sans-serif</string>
-
-    <!-- DO NOT TRANSLATE -->
-    <string name="day_of_week_label_typeface">sans-serif</string>
 
     <!-- Repeat an monthly event on the same day of every month [CHAR LIMIT=20] -->
     <string name="recurrence_month_pattern_by_day">le même jour tous les mois</string>
@@ -140,7 +130,7 @@
     <!-- Part of a description of an repeating event. This part states the date when a repeating
          event ends. The part before the semi-colon describes how it repeats.
          e.g. Every 2 weeks; until 1/1/2030 [CHAR LIMIT=21] -->
-    <string name="endByDate">; jusq\'à <xliff:g id="date">%s</xliff:g></string>
+    <string name="endByDate">; jusqu\'à <xliff:g id="date">%s</xliff:g></string>
     <!-- Part of a description of an repeating event. This part how many times the event repeats.
          The part before the semi-colon describes how it repeats.
          e.g. Every 2 weeks; for 15 times [CHAR LIMIT=15] -->
@@ -165,8 +155,16 @@
     <!-- The common portion of a string describing how often an event repeats,
          example: 'Monthly (on day 2)' -->
     <string name="monthly">Mensuel</string>
+    <plurals name="monthly">
+        <item quantity="one">Mensuel <xliff:g id="days_of_month">%2$s</xliff:g></item>
+        <item quantity="other">Tous les <xliff:g id="number">%1$d</xliff:g> mois <xliff:g id="days_of_month">%2$s</xliff:g></item>
+    </plurals>
     <!-- Calendar spinner item, to select that an event recurs every year. -->
     <string name="yearly_plain">Annuel</string>
+    <plurals name="yearly_plain">
+        <item quantity="one">Annuel <xliff:g id="days_of_month">%2$s</xliff:g></item>
+        <item quantity="other">Tous les <xliff:g id="number">%1$d</xliff:g> ans <xliff:g id="days_of_month">%2$s</xliff:g></item>
+    </plurals>
 
     <string name="switch_on">ON</string>
     <string name="switch_off">OFF</string>

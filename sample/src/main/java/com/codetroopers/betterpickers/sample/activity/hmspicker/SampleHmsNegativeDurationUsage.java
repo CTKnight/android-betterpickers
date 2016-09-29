@@ -1,21 +1,19 @@
-package com.codetroopers.betterpickers.sample.activity.numberpicker;
+package com.codetroopers.betterpickers.sample.activity.hmspicker;
 
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.codetroopers.betterpickers.numberpicker.NumberPickerBuilder;
-import com.codetroopers.betterpickers.numberpicker.NumberPickerDialogFragment;
+import com.codetroopers.betterpickers.hmspicker.HmsPickerBuilder;
+import com.codetroopers.betterpickers.hmspicker.HmsPickerDialogFragment;
 import com.codetroopers.betterpickers.sample.R;
 import com.codetroopers.betterpickers.sample.activity.BaseSampleActivity;
 
 /**
- * @Deprecated : usage of NumberPickerDialogHandler is deprecated
+ * User: derek Date: 3/17/13 Time: 3:59 PM
  */
-@Deprecated
-public class SampleNumberOldBasicUsage extends BaseSampleActivity
-        implements NumberPickerDialogFragment.NumberPickerDialogHandler {
+public class SampleHmsNegativeDurationUsage extends BaseSampleActivity implements HmsPickerDialogFragment.HmsPickerDialogHandlerV2 {
 
     private TextView mResultTextView;
 
@@ -28,20 +26,22 @@ public class SampleNumberOldBasicUsage extends BaseSampleActivity
         Button button = (Button) findViewById(R.id.button);
 
         mResultTextView.setText(R.string.no_value);
-        button.setText(R.string.number_picker_set);
+        button.setText(R.string.hms_picker_set);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                NumberPickerBuilder npb = new NumberPickerBuilder()
+                HmsPickerBuilder hpb = new HmsPickerBuilder()
+                        .setPlusMinusVisibility(View.VISIBLE)
                         .setFragmentManager(getSupportFragmentManager())
                         .setStyleResId(R.style.BetterPickersDialogFragment);
-                npb.show();
+                hpb.show();
             }
         });
     }
 
     @Override
-    public void onDialogNumberSet(int reference, int number, double decimal, boolean isNegative, double fullNumber) {
-        mResultTextView.setText(getString(R.string.number_picker_result_value, number, decimal, isNegative, fullNumber));;
+    public void onDialogHmsSet(int reference, boolean isNegative, int hours, int minutes, int seconds) {
+        mResultTextView.setText(getString(R.string.hms_picker_result_value_multiline, hours, minutes, seconds, isNegative));
     }
+
 }
